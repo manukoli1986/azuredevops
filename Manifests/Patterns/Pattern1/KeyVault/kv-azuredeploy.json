@@ -1,0 +1,142 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "defaultValue": "[concat(resourceGroup().name, '-', 'kv')]",
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "Id of Azure AD tenant"
+      }
+    },
+    "kvServicePrincipalObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object id of application to grant access to key vault"
+      }
+    },
+    "secretsObject": {
+      "type": "secureObject",
+      "defaultValue": "{}",
+      "metadata": {
+        "description": "Specifies all secrets {\"secretName\":\"\",\"secretValue\":\"\"} wrapped in a secure object."
+      }
+    },
+    "vnetSubnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Id of subnet to grant access from"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for resource."
+      }
+    },
+    "Environment": {
+      "type": "string",
+      "defaultValue":"NPE",
+      "metadata": {
+        "description": "The Environment where the resource is deployed"
+      }
+    },
+    "resourceTags": {
+      "type": "object",
+      "defaultValue": {
+          "Environment": "[parameters('Environment')]",
+          "Project": "AzureIntegration-ICC",
+          "Cloud":"Azure",
+          "Cost Center":"P.1100830.04.70.02",
+          "Owner":"Conroy, Jim (IST)"           
+      }
+    } 
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('keyVaultName')]",
+      "apiVersion": "2019-09-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('resourceTags')]",
+      "properties": {
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "tenantId": "[parameters('tenantId')]",
+        "accessPolicies": [
+          {
+            "objectId": "[parameters('kvServicePrincipalObjectId')]",
+            "tenantId": "[parameters('tenantId')]",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "Decrypt",
+                "Encrypt",
+                "UnwrapKey",
+                "Verify",
+                "Sign",
+                "WrapKey"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ],
+              "certificates": [
+                "Get",
+                "List",                
+                "Create",
+                "Import",
+                "Backup",
+                "Restore"
+              ]
+            }
+          }
+        ],
+        "sku": {
+          "name": "Standard",
+          "family": "A"
+        }        
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/', parameters('secretsObject').secrets[copyIndex()].secretName)]",
+      "apiVersion": "2018-02-14",
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ],
+      "copy": {
+        "name": "secretsCopy",
+        "count": "[length(parameters('secretsObject').secrets)]"
+      },
+      "properties": {
+        "value": "[parameters('secretsObject').secrets[copyIndex()].secretValue]"
+      }
+    }
+  ],
+  "outputs": {
+    "KeyVaultIdentifier": {
+      "value": "[parameters('keyVaultName')]",
+      "type": "string"
+    }
+  }
+}

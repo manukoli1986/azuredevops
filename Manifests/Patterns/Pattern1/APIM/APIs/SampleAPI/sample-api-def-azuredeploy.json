@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",    
+    "parameters": { 
+        "apimServiceName": {
+            "type": "string",
+            "defaultValue": "[concat(resourceGroup().name,'-apim')]"
+        
+        }
+    },
+    "variables": {  },    
+    "resources": [  
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(parameters('apimServiceName'), '/sample-api')]",
+            "dependsOn": [],
+            "properties": {
+                "apiVersion":"v1", 
+                "apiVersionSetId":"[resourceId('Microsoft.ApiManagement/service/apiVersionSets', parameters('apimServiceName'), 'SampleAPIVersionSet')]",
+                "displayName": "Sample API",
+                "apiRevision": "1",
+                "description": "This is the description during the demo.",
+                "subscriptionRequired": true,
+                "path": "sampleapi",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },        
+        {
+            "type": "Microsoft.ApiManagement/service/tags",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(parameters('apimServiceName'), '/DevTagDemo09123')]",
+            "dependsOn": [],
+            "properties": {
+                "displayName": "Deployed From DevOps"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/tags",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(parameters('apimServiceName'), '/sample-api/DevTagDemo09123')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'sample-api')]"                
+            ],
+            "properties": {}
+        }        
+    ],
+    "outputs": {  }
+}

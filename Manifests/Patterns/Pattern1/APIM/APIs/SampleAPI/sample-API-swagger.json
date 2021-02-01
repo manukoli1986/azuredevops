@@ -1,0 +1,116 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Sample API",
+        "version": "v1",
+        "description": "I have changed this during the demo of using the API ARM Templates"
+    },
+    "host": "apiminstancename.azure-api.net",
+    "basePath": "/sampleapi",
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "apiKeyHeader": {
+            "type": "apiKey",
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header"
+        },
+        "apiKeyQuery": {
+            "type": "apiKey",
+            "name": "subscription-key",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ],
+    "paths": {
+        "/proxy/{system-id}": {
+            "get": {
+                "description": "This is a sample API operation created via DevOps. New Branch Created.",
+                "operationId": "GetSampleOperation",
+                "summary": "GetSampleOperation",
+                "parameters": [
+                    {
+                        "name": "system-id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "queryparam1",
+                        "in": "query",
+                        "description": "This is a sample query paramater",
+                        "type": "string",
+                        "enum": [
+                            "stringvalue1",
+                            "stringvalue2",
+                            "DemoStringValue1"
+                        ]
+                    },
+                    {
+                        "name": "x-client-id",
+                        "in": "header",
+                        "description": "This is a sample header",
+                        "type": "string",
+                        "enum": [
+                            "headervalue11",
+                            "headervalue12"
+                        ]
+                    },
+                    {
+                        "name": "x-client-secret",
+                        "in": "header",
+                        "description": "This is a sample header secret",
+                        "type": "string",
+                        "enum": [
+                            "headervalue21",
+                            "headervalue22"
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SampleRepresentation"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "Message": "Demo Message during the Walkthrough.",
+                                "Description": "Hello From Melbourne!",
+                                "NewNode":"This is a new node in this JSON"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "SampleRepresentation": {
+            "type": "object",
+            "properties": {
+                "Message": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "NewNode": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": []
+}

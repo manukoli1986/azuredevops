@@ -1,0 +1,113 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "apiProfile": "",
+    "parameters": {
+        "apimServiceName": {
+            "type": "string",
+            "defaultValue": "[concat(resourceGroup().name,'-apim')]"
+        
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+              "description": "Used for Linked Templates. The base URI where artifacts required by this template are uploaded"
+            }
+          },
+        "_artifactsLocationSasToken": {
+            "type": "string",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation"
+            }
+        },
+        "appInsightsServiceName": {
+          "type": "string",
+          "metadata": {
+            "description": "Name of the Application Insights Service for Monitoring"
+        }    
+        }
+      },
+    "variables": {  },  
+    "resources": [         
+      {
+        "type": "Microsoft.ApiManagement/service/apis",
+        "apiVersion": "2019-01-01",
+        "name": "[concat(parameters('apimServiceName'), '/sample-api')]",
+        "dependsOn": [],
+        "properties": {
+          "apiVersion":"v1", 
+          "apiVersionSetId":"[resourceId('Microsoft.ApiManagement/service/apiVersionSets', parameters('apimServiceName'), 'SampleAPIVersionSet')]",
+          "apiRevision": "1",  
+          "path":"sample-api",
+          "value":"[concat(parameters('_artifactsLocation'), 'APIM/API/SampleAPI/', 'sample-API-swagger.json', parameters('_artifactsLocationSasToken'))]",
+          "format":"swagger-link-json"
+        },
+        "resources":[]
+      },
+      {
+        "type": "Microsoft.ApiManagement/service/apis/diagnostics",
+        "apiVersion": "2019-12-01",
+        "name": "[concat(parameters('apimServiceName'), '/sample-api/applicationinsights')]",
+        "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'sample-api')]"           
+        ],
+        "properties": {
+            "alwaysLog": "allErrors",
+            "httpCorrelationProtocol": "Legacy",
+            "verbosity": "verbose",
+            "logClientIp": true,
+            "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apimServiceName'), parameters('appInsightsServiceName'))]",
+            "sampling": {
+                "samplingType": "fixed",
+                "percentage": 100
+            },
+            "frontend": {
+                "request": {
+                    "headers": [],
+                    "body": {
+                        "bytes": 0
+                    }
+                },
+                "response": {
+                    "headers": [],
+                    "body": {
+                        "bytes": 0
+                    }
+                }
+            },
+            "backend": {
+                "request": {
+                    "headers": [],
+                    "body": {
+                        "bytes": 0
+                    }
+                },
+                "response": {
+                    "headers": [],
+                    "body": {
+                        "bytes": 0
+                    }
+                }
+            }
+        }
+      },       
+      {
+        "type": "Microsoft.ApiManagement/service/products/apis",
+        "apiVersion": "2019-01-01",
+        "name": "[concat(parameters('apimServiceName'), '/SampleAPIProduct/sample-api')]",
+        "properties":{},
+        "dependsOn": []
+      },         
+      {
+        "type": "Microsoft.ApiManagement/service/apis/policies",
+        "apiVersion": "2019-01-01",
+        "name": "[concat(parameters('apimServiceName'), '/sample-api/policy')]",
+        "dependsOn": [],
+        "properties": {               
+            "value":"[concat(parameters('_artifactsLocation'), 'APIM/APIManagementPolicies/', 'sample-api-operation-policy.xml', parameters('_artifactsLocationSasToken'))]",
+            "format":"rawxml-link"
+        }
+      }
+  ],
+  "outputs": {}
+}

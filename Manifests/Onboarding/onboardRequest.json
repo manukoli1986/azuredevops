@@ -1,0 +1,38 @@
+{
+	"OrganisationName": "UStechTrick",
+	"ProjectName": "Mac_Team",
+	"Repository": "Mac_software",
+	"Pattern": "Pattern1",
+	"Teams": [
+		{
+			"Name": "Devs",
+			"Details": {
+				"RBAC":"Contributors",
+				"Members": [ 
+					{ "mailAddress": "manukoli1986@hotmail.com" },
+					{ "mailAddress": "sachindagar1984@hotmail.com" }
+				]
+			}
+		},
+		{
+			"Name": "Testers",
+			"Details": {
+				"RBAC":"Contributors",
+				"Members": [ 
+					{ "mailAddress": "manukoli1986@hotmail.com" },
+					{ "mailAddress": "sachindagar1984@hotmail.com" } 
+				]
+			}
+		},
+		{
+			"Name": "Ops",
+			"Details": {
+				"RBAC":"Contributors",
+				"Members": [
+					{ "mailAddress": "manukoli1986@hotmail.com" },
+					{ "mailAddress": "sachindagar1984@hotmail.com" }
+				]
+			}
+		}
+	]
+}

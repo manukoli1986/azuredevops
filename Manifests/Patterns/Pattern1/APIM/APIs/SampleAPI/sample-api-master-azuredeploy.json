@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",    
+    "parameters": { 
+        "apimServiceName": {
+            "type": "string",
+            "defaultValue": "[concat(resourceGroup().name,'-apim')]"
+        
+        },
+        "artifactsLocation": {
+            "type": "string",
+            "metadata": {
+              "description": "Used for Linked Templates. The base URI where artifacts required by this template are uploaded"
+            }
+          },
+        "artifactsLocationSasToken": {
+            "type": "string",
+            "metadata": {
+                "description": "The sasToken required to access artifactsLocation"
+            }
+        },
+        "appInsightsServiceName": {
+          "type": "string",
+          "metadata": {
+              "description": "Name of the Application Insights Service for Monitoring"
+          }
+      }
+     },
+    "variables": {  },    
+    "resources": [ 
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "SampleApiversionSetTemplate",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[concat(parameters('artifactsLocation'), 'APIM/API/SampleAPI/', 'sample-api-versionset-azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+              },
+              "parameters": {
+                "apimServiceName": {
+                  "value": "[parameters('apimServiceName')]"
+                }
+              }
+            }
+          },
+          {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "SampleApiDefinitionTemplate",
+            "dependsOn": [
+              "[resourceId('Microsoft.Resources/deployments', 'SampleApiversionSetTemplate')]"        
+            ],
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[concat(parameters('artifactsLocation'), 'APIM/API/SampleAPI/', 'sample-api-def-azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+              },
+              "parameters": {
+                "apimServiceName": {
+                  "value": "[parameters('apimServiceName')]"
+                }                
+              }
+            }
+          },
+          {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "SampleApiSubTemplate",
+            "dependsOn": [
+              "[resourceId('Microsoft.Resources/deployments', 'SampleApiDefinitionTemplate')]"        
+            ],
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[concat(parameters('artifactsLocation'), 'APIM/API/SampleAPI/', 'sample-api-sub-azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+              },
+              "parameters": {
+                "apimServiceName": {
+                  "value": "[parameters('apimServiceName')]"
+                },
+                "_artifactsLocation": {
+                  "value": "[parameters('artifactsLocation')]"
+                },
+                "_artifactsLocationSasToken": {
+                  "value": "[parameters('artifactsLocationSasToken')]"
+                },
+                "appInsightsServiceName": {
+                  "value": "[parameters('appInsightsServiceName')]"
+                }
+              }
+            }
+          }
+     ],
+    "outputs": {  }
+  }

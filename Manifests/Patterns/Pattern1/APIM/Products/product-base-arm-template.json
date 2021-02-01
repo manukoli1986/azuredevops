@@ -1,0 +1,52 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "apimServiceName": {
+      "type": "string",
+      "defaultValue": "[concat(resourceGroup().name, '-', 'APM')]",
+      "metadata": {
+        "description": "The name of the API Management"
+      }
+    },
+    "productName": {
+      "type": "string",
+      "defaultValue": "Product-Name-NoSpaces-Value-Here",
+      "metadata": {
+        "description": "Name of the Product to register"
+      }
+    },
+    "productDisplayName": {
+      "type": "string",
+      "defaultValue": "Product Display Name",
+      "metadata": {
+        "description": "Name of the Product to register"
+      }
+    }
+  },
+  "variables": { },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service/products",
+      "name": "[concat(parameters('apimServiceName'), '/', parameters('productName'))]",
+      "apiVersion": "2018-01-01",
+      "properties": {
+        "displayName": "[parameters('productDisplayName')]",
+        "subscriptionRequired": true,
+        "approvalRequired": true,
+        "state": "published"
+      },
+      "resources": [        
+        {
+          "type": "Microsoft.ApiManagement/service/products/groups",
+          "name": "[concat(parameters('apimServiceName'), '/', parameters('productName'), '/developers')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimServiceName'), parameters('productName'))]"
+          ],
+          "apiVersion": "2019-01-01",
+          "properties": {}
+        }
+      ]
+    }
+  ]
+}

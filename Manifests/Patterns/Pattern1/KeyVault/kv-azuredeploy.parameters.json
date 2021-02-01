@@ -1,0 +1,24 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "value": ""
+    },
+    "objectId": {
+      "value": ""
+    },
+    "secretName": {
+      "value": ""
+    },
+    "secretValue": {
+      "value": ""
+    },
+    "enabledForDeployment": {
+      "value": true
+    },
+    "enabledForTemplateDeployment": {
+      "value": true
+    }
+  }
+}
